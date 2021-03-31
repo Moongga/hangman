@@ -122,7 +122,7 @@ void main()
 	cout << "Попробуйте отгадать букву: ";
 	
 	cin >> answer_word;
-	setlocale(0, "C");
+	//setlocale(0, "C");
 	cout << " " << answer_word;
 
 	// количество слов, которых осталось отгадать пользователю
