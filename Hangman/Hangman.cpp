@@ -124,6 +124,8 @@ void main()
 		cout << "_ ";
 	}
 
+	words_amount--;
+
 	int tries = 6;
 
 	SetCursor(40, 8);
@@ -134,8 +136,6 @@ void main()
 	cout << "Попробуйте отгадать букву: ";
 	
 	cin >> answer_word;
-	setlocale(0, "C");
-	cout << " " << answer_word;
 
 	// количество слов, которых осталось отгадать пользователю
 	int words_left = words_amount;
