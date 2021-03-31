@@ -1,11 +1,12 @@
 ﻿#include <iostream>
-#include <windows.h>
+#include <Windows.h>
 #include <conio.h>
 #include <string>
 #include <ctime>
 #include <cstring>
 #include "Menu.h"
 #include "WordsFiles.h"
+
 using namespace std;
 
 void SetCursor(int x, int y) {
@@ -33,13 +34,24 @@ void SetCursor(int x, int y) {
 
 void main()
 {
-
 	SetConsoleCP(1251);
 	SetConsoleOutputCP(1251);
-	//CONSOLE_CURSOR_INFO cursor;
-	//cursor.bVisible = false;
-	//cursor.dwSize = 100;
-	//SetConsoleCursorInfo(h, &cursor);
+
+	// Выставление шрифта по умолчанию
+	CONSOLE_FONT_INFOEX CFI;
+	CFI.cbSize = sizeof CFI;
+	CFI.nFont = 0;
+	CFI.dwFontSize.X = 12; // ширина шрифта
+	CFI.dwFontSize.Y = 14;  // высота шрифта
+	CFI.FontFamily = FF_DONTCARE;
+	CFI.FontWeight = FW_NORMAL;
+	wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+
+	CONSOLE_CURSOR_INFO cursor;
+	cursor.bVisible = false;
+	cursor.dwSize = 100;
+	SetConsoleCursorInfo(h, &cursor);
 
 	system("title Hangman");
 
@@ -51,7 +63,7 @@ void main()
 	srand(time(0));
 	rand();
 
-	//setlocale(0, "RUS");
+	setlocale(0, "RUS");
 
 	SetCursor(10, 2);
 	cout << " ---";
@@ -122,7 +134,7 @@ void main()
 	cout << "Попробуйте отгадать букву: ";
 	
 	cin >> answer_word;
-	//setlocale(0, "C");
+	setlocale(0, "C");
 	cout << " " << answer_word;
 
 	// количество слов, которых осталось отгадать пользователю
