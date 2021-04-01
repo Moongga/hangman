@@ -155,6 +155,7 @@
     <ClCompile Include="Hangman.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="GlobalVariables.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Temp.h" />
     <ClInclude Include="WordsFiles.h" />

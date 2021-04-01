@@ -6,6 +6,7 @@
 #include <cstring>
 #include "Menu.h"
 #include "WordsFiles.h"
+#include "GlobalVariables.h"
 
 using namespace std;
 
@@ -13,6 +14,16 @@ void SetCursor(int x, int y) {
 	position.X = x;
 	position.Y = y;
 	SetConsoleCursorPosition(h, position);
+}
+
+bool RightWord(int index = 0) {
+	for (int i = 0; i < words_amount; i++) {
+		if (index == i)
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 void ShowAlphabet() {
@@ -56,58 +67,125 @@ void ShowAlphabet() {
 	position_test.Y = startY + current_item_Y * margin_Y;
 	position_test.X = startX + current_item_X * margin_X;
 	SetConsoleCursorPosition(h, position);
-	cout << menu_items[current_item_Y + current_item_X];
+	cout << menu_items[word_index];
 
 	int code;
+
+
 	while (true)
 	{
-		code = _getch();
-		if (code == 224)
-			code = _getch();
+		string comparate = answer_word;
+		bool comparate_enter = true;
 
+		code = _getch();
+		if (code == 224) {
+			code = _getch();
+		}
 		
 		SetConsoleTextAttribute(h, 7);
 		position_test.Y = startY + current_item_Y * margin_Y;
 		position_test.X = startX + current_item_X * margin_X;
 		SetConsoleCursorPosition(h, position_test);
-		cout << menu_items[current_item_Y + current_item_X];
+		cout << menu_items[word_index];
 
 		if ((code == DOWN) && current_item_Y < margin_Y - 1) // down arrow
 		{
 			current_item_Y++;
+			word_index += 13;
 		}
 		else if ((code == UP) && current_item_Y > 0) // up arrow
 		{
 			current_item_Y--;
+			word_index -= 13;
 		}
-		/*else if (code == ENTER)
+		if ((code == RIGHT) && current_item_X < 12) // right arrow
 		{
-			switch (current_item)
+			current_item_X++;
+			word_index++;
+		}
+		else if ((code == LEFT) && current_item_X > 0) // left arrow
+		{
+			current_item_X--;
+			word_index--;
+		}
+		else if (code == ENTER)
+		{
+			for (int i = 0; i < 26; i++)
 			{
-			case 0:
-				new_game();
-				break;
-			case 1:
-				load_game();
-				break;
-			case 2:
-				game_options();
-				break;
-			case 3:
-				about_author();
-				break;
-			default:
-				exit(0);
-				break;
-			}*/
-		//}
+				if (i == word_index)
+				{
+					answer_word = menu_items[word_index];
+					break;
+				}
+			}
 
-		SetConsoleTextAttribute(h, 14);
-		position_test.Y = startY + current_item_Y * margin_Y;
-		SetConsoleCursorPosition(h, position_test);
-		cout << menu_items[13 + current_item_X];
+			comparate_enter = false;
 
+			//if (RightWord(word_index))
+			//{
+			//	
+			//	position_test.X--;
+			//	SetConsoleCursorPosition(h, position_test);
+			//	SetConsoleTextAttribute(h, 10);
+			//	cout << menu_items[word_index];
+			//}
+			//else if (!RightWord(word_index)) {
+			//	
+			//	position_test.X--;
+			//	SetConsoleCursorPosition(h, position_test);
+			//	SetConsoleTextAttribute(h, 12);
+			//	cout << menu_items[word_index];
+			//}
+		}
+
+		if (comparate_enter)
+		{
+			SetConsoleTextAttribute(h, 14);
+			position_test.Y = startY + current_item_Y * margin_Y;
+			position_test.X = startX + current_item_X * margin_X;
+			SetConsoleCursorPosition(h, position_test);
+			cout << menu_items[word_index];
+		}
+		else if (!comparate_enter)
+		{
+			if (RightWord(word_index))
+			{
+				SetConsoleTextAttribute(h, 10);
+				position_test.Y = startY + current_item_Y * margin_Y;
+				position_test.X = startX + current_item_X * margin_X;
+				SetConsoleCursorPosition(h, position_test);
+				cout << menu_items[word_index];
+			}
+			else if (!RightWord(word_index))
+			{
+				SetConsoleTextAttribute(h, 12);
+				position_test.Y = startY + current_item_Y * margin_Y;
+				position_test.X = startX + current_item_X * margin_X;
+				SetConsoleCursorPosition(h, position_test);
+				cout << menu_items[word_index];
+			}
+			//SetConsoleTextAttribute(h, 14);
+			//position_test.Y = startY + current_item_Y * margin_Y;
+			//position_test.X = startX + current_item_X * margin_X;
+			//SetConsoleCursorPosition(h, position_test);
+			//cout << menu_items[word_index];
+		}
+		//SetConsoleTextAttribute(h, 14);
+		//position_test.Y = startY + current_item_Y * margin_Y;
+		//position_test.X = startX + current_item_X * margin_X;
+		//SetConsoleCursorPosition(h, position_test);
+		//cout << menu_items[word_index];
+
+		if (comparate != answer_word)
+		{
+			break;
+		}
 	}
+
+}
+
+void MoveAlphabet() {
+
 }
 
 void main()
@@ -143,9 +221,12 @@ void main()
 
 	setlocale(0, "RUS");
 
-	SetCursor(10, 2);
+	int hangman_Xposition = 20;
+	int hangman_Yposition = 5;
+
+	SetCursor(hangman_Xposition - 2, hangman_Yposition);
 	cout << " ---";
-	SetCursor(10, 3);
+	SetCursor(hangman_Xposition - 2, hangman_Yposition + 1);
 	for (int i = 0; i < 4; i++)
 	{
 		cout << "|";
@@ -153,7 +234,7 @@ void main()
 		SetConsoleCursorPosition(h, position);
 	}
 
-	SetCursor(10, 7);
+	SetCursor(hangman_Xposition - 2, hangman_Yposition + 5);
 
 	cout << "----";
 
@@ -188,13 +269,13 @@ void main()
 	}
 
 
-	ShowAlphabet();
+
 
 	//генерация случайного игрового слова из списка
-	string game_word = GetWord();
+	// тут когда-то жила string game_word = GetWord();
 
 	//отдельная переменная для подсчёта количества букв в слове чтобы нарисовать прочерки (неотгаданные буквы)
-	int words_amount = game_word.length();
+	// тут когда-то жила int words_amount = game_word.length();
 
 	SetCursor(40, 3);
 	for (int i = 0; i < words_amount - 1; i++)
@@ -209,14 +290,19 @@ void main()
 	SetCursor(40, 8);
 	cout << "Осталось попыток: " << tries;
 
-	string answer_word;
+	// тут когда-то жила string answer_word;
+
 	SetCursor(40, 4);
-	cout << "Попробуйте отгадать букву: ";
+	ShowAlphabet();
+
+	//cout << "Попробуйте отгадать букву: ";
 	
-	cin >> answer_word;
+	//cin >> answer_word;
 
 	// количество слов, которых осталось отгадать пользователю
-	int words_left = words_amount;
+	
+
+	
 
 	while (words_left > 0) {
 		if (tries > 0)
@@ -242,32 +328,32 @@ void main()
 				tries--;
 				if (tries == 5)
 				{
-					SetCursor(13, 3);
+					SetCursor(hangman_Xposition + 1, hangman_Yposition + 1);
 					cout << "o";
 				}
 				if (tries == 4)
 				{
-					SetCursor(13, 4);
+					SetCursor(hangman_Xposition + 1, hangman_Yposition + 2);
 					cout << "|";
 				}
 				if (tries == 3)
 				{
-					SetCursor(12, 4);
+					SetCursor(hangman_Xposition, hangman_Yposition + 2);
 					cout << "/";
 				}
 				if (tries == 2)
 				{
-					SetCursor(14, 4);
+					SetCursor(hangman_Xposition + 2, hangman_Yposition + 2);
 					cout << "\\";
 				}
 				if (tries == 1)
 				{
-					SetCursor(12, 5);
+					SetCursor(hangman_Xposition, hangman_Yposition + 3);
 					cout << "/";
 				}
 				if (tries == 0)
 				{
-					SetCursor(14, 5);
+					SetCursor(hangman_Xposition + 2, hangman_Yposition + 3);
 					cout << "\\";
 				}
 
@@ -294,7 +380,9 @@ void main()
 				cout << "Поздравляем, Вы выиграли!\n";
 				break;
 			}
-			cin >> answer_word;
+			//cin >> answer_word;
+
+			ShowAlphabet();
 		}
 	}
 }
