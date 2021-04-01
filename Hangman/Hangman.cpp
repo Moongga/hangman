@@ -27,20 +27,9 @@ bool RightWord(int index = 0) {
 }
 
 void ShowAlphabet() {
-	enum Keys { ENTER = 13, ESCAPE = 27, SPACE = 32, LEFT = 75, RIGHT = 77, DOWN = 80, UP = 72 };
-
-	const int items_count = 26;
-	string menu_items[items_count] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-		"k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
 
 	//SetCursor(40, 14);
 
-	int startX = 40;
-	int startY = 11;
-	int margin_Y = 2;
-	int margin_X = 2;
-
-	COORD position_test = { startX, startY };
 
 	for (int i = 0; i < 26; i++)
 	{
@@ -55,11 +44,6 @@ void ShowAlphabet() {
 		position_test.X += margin_X;
 	}
 
-	int current_item_Y = 0;
-	int current_item_X = 0;
-
-	int word_index = 0;
-
 	//int current_item = 0; // первая буква
 	SetCursor(startX, startY);
 
@@ -69,9 +53,11 @@ void ShowAlphabet() {
 	SetConsoleCursorPosition(h, position);
 	cout << menu_items[word_index];
 
+}
+
+void MoveAlphabet() {
+
 	int code;
-
-
 	while (true)
 	{
 		string comparate = answer_word;
@@ -81,8 +67,9 @@ void ShowAlphabet() {
 		if (code == 224) {
 			code = _getch();
 		}
-		
-		SetConsoleTextAttribute(h, 7);
+
+
+		SetConsoleTextAttribute(h, curent_color);
 		position_test.Y = startY + current_item_Y * margin_Y;
 		position_test.X = startX + current_item_X * margin_X;
 		SetConsoleCursorPosition(h, position_test);
@@ -146,30 +133,30 @@ void ShowAlphabet() {
 			SetConsoleCursorPosition(h, position_test);
 			cout << menu_items[word_index];
 		}
-		else if (!comparate_enter)
-		{
-			if (RightWord(word_index))
-			{
-				SetConsoleTextAttribute(h, 10);
-				position_test.Y = startY + current_item_Y * margin_Y;
-				position_test.X = startX + current_item_X * margin_X;
-				SetConsoleCursorPosition(h, position_test);
-				cout << menu_items[word_index];
-			}
-			else if (!RightWord(word_index))
-			{
-				SetConsoleTextAttribute(h, 12);
-				position_test.Y = startY + current_item_Y * margin_Y;
-				position_test.X = startX + current_item_X * margin_X;
-				SetConsoleCursorPosition(h, position_test);
-				cout << menu_items[word_index];
-			}
-			//SetConsoleTextAttribute(h, 14);
-			//position_test.Y = startY + current_item_Y * margin_Y;
-			//position_test.X = startX + current_item_X * margin_X;
-			//SetConsoleCursorPosition(h, position_test);
-			//cout << menu_items[word_index];
-		}
+		//else if (!comparate_enter)
+		//{
+		//	if (RightWord(word_index))
+		//	{
+		//		SetConsoleTextAttribute(h, 10);
+		//		position_test.Y = startY + current_item_Y * margin_Y;
+		//		position_test.X = startX + current_item_X * margin_X;
+		//		SetConsoleCursorPosition(h, position_test);
+		//		cout << menu_items[word_index];
+		//	}
+		//	else if (!RightWord(word_index))
+		//	{
+		//		SetConsoleTextAttribute(h, 12);
+		//		position_test.Y = startY + current_item_Y * margin_Y;
+		//		position_test.X = startX + current_item_X * margin_X;
+		//		SetConsoleCursorPosition(h, position_test);
+		//		cout << menu_items[word_index];
+		//	}
+		//	//SetConsoleTextAttribute(h, 14);
+		//	//position_test.Y = startY + current_item_Y * margin_Y;
+		//	//position_test.X = startX + current_item_X * margin_X;
+		//	//SetConsoleCursorPosition(h, position_test);
+		//	//cout << menu_items[word_index];
+		//}
 		//SetConsoleTextAttribute(h, 14);
 		//position_test.Y = startY + current_item_Y * margin_Y;
 		//position_test.X = startX + current_item_X * margin_X;
@@ -181,11 +168,6 @@ void ShowAlphabet() {
 			break;
 		}
 	}
-
-}
-
-void MoveAlphabet() {
-
 }
 
 void main()
@@ -224,6 +206,7 @@ void main()
 	int hangman_Xposition = 20;
 	int hangman_Yposition = 5;
 
+	SetConsoleTextAttribute(h, 7);
 	SetCursor(hangman_Xposition - 2, hangman_Yposition);
 	cout << " ---";
 	SetCursor(hangman_Xposition - 2, hangman_Yposition + 1);
@@ -268,15 +251,6 @@ void main()
 		SetCursor(40, 11);
 	}
 
-
-
-
-	//генерация случайного игрового слова из списка
-	// тут когда-то жила string game_word = GetWord();
-
-	//отдельная переменная для подсчёта количества букв в слове чтобы нарисовать прочерки (неотгаданные буквы)
-	// тут когда-то жила int words_amount = game_word.length();
-
 	SetCursor(40, 3);
 	for (int i = 0; i < words_amount - 1; i++)
 	{
@@ -290,21 +264,13 @@ void main()
 	SetCursor(40, 8);
 	cout << "Осталось попыток: " << tries;
 
-	// тут когда-то жила string answer_word;
-
 	SetCursor(40, 4);
 	ShowAlphabet();
+	MoveAlphabet();
 
-	//cout << "Попробуйте отгадать букву: ";
-	
-	//cin >> answer_word;
-
-	// количество слов, которых осталось отгадать пользователю
-	
-
-	
 
 	while (words_left > 0) {
+		SetConsoleTextAttribute(h, 14);
 		if (tries > 0)
 		{
 			position.Y = 3;
@@ -380,9 +346,8 @@ void main()
 				cout << "Поздравляем, Вы выиграли!\n";
 				break;
 			}
-			//cin >> answer_word;
 
-			ShowAlphabet();
+			MoveAlphabet();
 		}
 	}
 }
