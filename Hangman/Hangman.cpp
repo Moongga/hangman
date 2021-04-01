@@ -15,22 +15,100 @@ void SetCursor(int x, int y) {
 	SetConsoleCursorPosition(h, position);
 }
 
-//void ShowAlphabet() {
-//	const int items_count = 26;
-//	string menu_items[items_count] = { "abcdefghijklmnopqrstuvwxyz" };
-//
-//	for (int i = 0; i < 13; i++)
-//	{
-//		cout << menu_items[i] << " ";
-//	}
-//
-//	position.Y++;
-//
-//	for (int i = 13; i < 26; i++)
-//	{
-//		cout << menu_items[i] << " ";
-//	}
-//}
+void ShowAlphabet() {
+	enum Keys { ENTER = 13, ESCAPE = 27, SPACE = 32, LEFT = 75, RIGHT = 77, DOWN = 80, UP = 72 };
+
+	const int items_count = 26;
+	string menu_items[items_count] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+		"k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+
+	//SetCursor(40, 14);
+
+	int startX = 40;
+	int startY = 11;
+	int margin_Y = 2;
+	int margin_X = 2;
+
+	COORD position_test = { startX, startY };
+
+	for (int i = 0; i < 26; i++)
+	{
+		if (i == 13)
+		{
+			position_test.Y += margin_Y;
+			position_test.X = startX;
+		}
+		SetConsoleTextAttribute(h, 7);
+		SetConsoleCursorPosition(h, position_test);
+		cout << menu_items[i];
+		position_test.X += margin_X;
+	}
+
+	int current_item_Y = 0;
+	int current_item_X = 0;
+
+	int word_index = 0;
+
+	//int current_item = 0; // первая буква
+	SetCursor(startX, startY);
+
+	SetConsoleTextAttribute(h, 14);
+	position_test.Y = startY + current_item_Y * margin_Y;
+	position_test.X = startX + current_item_X * margin_X;
+	SetConsoleCursorPosition(h, position);
+	cout << menu_items[current_item_Y + current_item_X];
+
+	int code;
+	while (true)
+	{
+		code = _getch();
+		if (code == 224)
+			code = _getch();
+
+		
+		SetConsoleTextAttribute(h, 7);
+		position_test.Y = startY + current_item_Y * margin_Y;
+		position_test.X = startX + current_item_X * margin_X;
+		SetConsoleCursorPosition(h, position_test);
+		cout << menu_items[current_item_Y + current_item_X];
+
+		if ((code == DOWN) && current_item_Y < margin_Y - 1) // down arrow
+		{
+			current_item_Y++;
+		}
+		else if ((code == UP) && current_item_Y > 0) // up arrow
+		{
+			current_item_Y--;
+		}
+		/*else if (code == ENTER)
+		{
+			switch (current_item)
+			{
+			case 0:
+				new_game();
+				break;
+			case 1:
+				load_game();
+				break;
+			case 2:
+				game_options();
+				break;
+			case 3:
+				about_author();
+				break;
+			default:
+				exit(0);
+				break;
+			}*/
+		//}
+
+		SetConsoleTextAttribute(h, 14);
+		position_test.Y = startY + current_item_Y * margin_Y;
+		SetConsoleCursorPosition(h, position_test);
+		cout << menu_items[13 + current_item_X];
+
+	}
+}
 
 void main()
 {
@@ -109,8 +187,8 @@ void main()
 		SetCursor(40, 11);
 	}
 
-	//SetCursor(40, 14);
-	//ShowAlphabet();
+
+	ShowAlphabet();
 
 	//генерация случайного игрового слова из списка
 	string game_word = GetWord();

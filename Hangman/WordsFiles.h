@@ -15,13 +15,18 @@ string GetWord()
 
 	char path [256];
 
+	// количество строк в файле
+	int n;
+
 	if (which_path)
 	{
 		strcpy(path, "Words_Ru.txt");
+		n = 65;
 	}
 	else
 	{
 		strcpy(path, "Words_Eng.txt");
+		n = 364;
 	}
 
 	FILE* f;
@@ -29,8 +34,7 @@ string GetWord()
 	//fopen_s(&f, "Words.txt", "r"); // открываем его на чтение
 	fopen_s(&f, path, "r"); // открываем его на чтение
 
-	//int n = 364; // количество строк в файле
-	int n = 65;
+
 
 	int random = rand() % n + 1;
 
