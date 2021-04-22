@@ -31,10 +31,7 @@ string GetWord()
 
 	FILE* f;
 
-	//fopen_s(&f, "Words.txt", "r"); // открываем его на чтение
 	fopen_s(&f, path, "r"); // открываем его на чтение
-
-
 
 	int random = rand() % n + 1;
 

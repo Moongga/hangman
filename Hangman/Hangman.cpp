@@ -7,8 +7,13 @@
 #include "Menu.h"
 #include "WordsFiles.h"
 #include "GlobalVariables.h"
-
 using namespace std;
+
+//////
+int words_amount;
+int words_left;
+//////
+
 
 void SetCursor(int x, int y) {
 	position.X = x;
@@ -27,9 +32,6 @@ bool RightWord(int index = 0) {
 }
 
 void ShowAlphabet() {
-
-	//SetCursor(40, 14);
-
 
 	for (int i = 0; i < 26; i++)
 	{
@@ -52,7 +54,6 @@ void ShowAlphabet() {
 	position_test.X = startX + current_item_X * margin_X;
 	SetConsoleCursorPosition(h, position);
 	cout << menu_items[word_index];
-
 }
 
 void MoveAlphabet() {
@@ -170,11 +171,7 @@ void MoveAlphabet() {
 	}
 }
 
-void main()
-{
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
-
+void Basic_Settings() {
 	// Выставление шрифта по умолчанию
 	CONSOLE_FONT_INFOEX CFI;
 	CFI.cbSize = sizeof CFI;
@@ -185,6 +182,38 @@ void main()
 	CFI.FontWeight = FW_NORMAL;
 	wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
 	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+}
+
+void Special_Settings() {
+	// Выставление шрифта по умолчанию
+	CONSOLE_FONT_INFOEX CFI;
+	CFI.cbSize = sizeof CFI;
+	CFI.nFont = 0;
+	CFI.dwFontSize.X = 12; // ширина шрифта
+	CFI.dwFontSize.Y = 14;  // высота шрифта
+	CFI.FontFamily = FF_DONTCARE;
+	CFI.FontWeight = FW_NORMAL;
+	wcscpy_s(CFI.FaceName, L"Terminal"); //задаём шрифт по умолчанию (точечный)
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+}
+
+void main()
+{
+	SetConsoleCP(1251);
+	SetConsoleOutputCP(1251);
+
+	Basic_Settings();
+	//// Выставление шрифта по умолчанию
+	//CONSOLE_FONT_INFOEX CFI;
+	//CFI.cbSize = sizeof CFI;
+	//CFI.nFont = 0;
+	//CFI.dwFontSize.X = 12; // ширина шрифта
+	//CFI.dwFontSize.Y = 14;  // высота шрифта
+	//CFI.FontFamily = FF_DONTCARE;
+	//CFI.FontWeight = FW_NORMAL;
+
+	//wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
+	//SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
 
 	CONSOLE_CURSOR_INFO cursor;
 	cursor.bVisible = false;
@@ -200,15 +229,17 @@ void main()
 
 	srand(time(0));
 	rand();
-
-	setlocale(0, "RUS");
+	
+	setlocale(LC_ALL, "С");
+	//setlocale(0, "RUS");
 
 	int hangman_Xposition = 20;
-	int hangman_Yposition = 5;
+	int hangman_Yposition = 14;
+	int words_Yposition = startY - 6;
 
 	SetConsoleTextAttribute(h, 7);
 	SetCursor(hangman_Xposition - 2, hangman_Yposition);
-	cout << " ---";
+	cout << " " << "-" << "-" << "-";
 	SetCursor(hangman_Xposition - 2, hangman_Yposition + 1);
 	for (int i = 0; i < 4; i++)
 	{
@@ -221,9 +252,12 @@ void main()
 
 	cout << "----";
 
-	SetCursor(40, 10);
+	setlocale(0, "RUS");
+	//Basic_Settings();
+
+	SetCursor(40, 19);
 	cout << "На каком языке Вы хотите отгадывать?";
-	SetCursor(40, 11);
+	SetCursor(40, 20);
 	cout << "(на русском - 1, на английском - 2): ";
 	int answer_language;
 
@@ -233,13 +267,18 @@ void main()
 	{
 		which_path = true;
 	}
+
 	else if (answer_language == 2)
 	{
 		which_path = false;
 	}
 
+	game_word = GetWord();
+	words_amount = game_word.length();
+	words_left = words_amount;
+
 	// Чистим текст
-	SetCursor(40, 10);
+	SetCursor(40, 19);
 	for (int new_line = 0; new_line < 2; new_line++)
 	{
 		for (int i = 0; i < 38; i++)
@@ -248,35 +287,48 @@ void main()
 			position.X++;
 			SetConsoleCursorPosition(h, position);
 		}
-		SetCursor(40, 11);
+		SetCursor(40, 20);
 	}
 
-	SetCursor(40, 3);
+
+
+	SetCursor(40, words_Yposition);
 	for (int i = 0; i < words_amount - 1; i++)
 	{
 		cout << "_ ";
 	}
 
 	words_amount--;
+	words_left--;
 
 	int tries = 6;
 
-	SetCursor(40, 8);
-	cout << "Осталось попыток: " << tries;
+	//SetCursor(40, 8);
+	//cout << "Осталось попыток: " << tries;
 
-	SetCursor(40, 4);
-	ShowAlphabet();
-	MoveAlphabet();
-
+	if (which_path)
+	{
+		SetCursor(40, 4);
+		cout << "Введите букву: ";
+		cin >> answer_word;
+	}
+	else if (!which_path)
+	{
+		//SetCursor(40, 4);
+		ShowAlphabet();
+		MoveAlphabet();
+	}
 
 	while (words_left > 0) {
 		SetConsoleTextAttribute(h, 14);
 		if (tries > 0)
 		{
-			position.Y = 3;
+			position.Y = words_Yposition;
 
-			// переменная для выявления, отгадал ли пользователь букву, или нет (в таком случае рисуется часть человечка)
+			// Переменная для выявления, отгадал ли пользователь букву, или нет (в таком случае рисуется часть человечка)
 			int comparate = words_left;
+
+			// Проверяем букву пользователя
 			for (int i = 0; i < words_amount; i++)
 			{
 				if (answer_word[0] == game_word[i])
@@ -323,8 +375,8 @@ void main()
 					cout << "\\";
 				}
 
-				SetCursor(40, 8);
-				cout << "Осталось попыток: " << tries;
+				//SetCursor(40, 8);
+				//cout << "Осталось попыток: " << tries;
 			}
 
 			SetCursor(67, 4);
@@ -346,8 +398,18 @@ void main()
 				cout << "Поздравляем, Вы выиграли!\n";
 				break;
 			}
-
-			MoveAlphabet();
+			if (which_path)
+			{
+				SetCursor(40, 4);
+				cout << "Введите букву: ";
+				cin >> answer_word;
+			}
+			else if (!which_path)
+			{
+				SetCursor(40, 4);
+				MoveAlphabet();
+			}
+			//MoveAlphabet();
 		}
 	}
 }

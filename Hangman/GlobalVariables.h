@@ -10,7 +10,7 @@ enum Keys { ENTER = 13, ESCAPE = 27, SPACE = 32, LEFT = 75, RIGHT = 77, DOWN = 8
 int curent_color = 7;
 
 int startX = 40;
-int startY = 11;
+int startY = 19;
 int margin_Y = 2;
 int margin_X = 2;
 
@@ -27,6 +27,4 @@ int current_item_X = 0;
 int word_index = 0;
 
 string answer_word;
-string game_word = GetWord();
-int words_amount = game_word.length();
-int words_left = words_amount;
+string game_word;
