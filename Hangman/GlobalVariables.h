@@ -5,8 +5,6 @@
 #include <ctime>
 #include <cstring>
 
-enum Keys { ENTER = 13, ESCAPE = 27, SPACE = 32, LEFT = 75, RIGHT = 77, DOWN = 80, UP = 72 };
-
 int curent_color = 7;
 
 int startX = 40;
@@ -17,8 +15,15 @@ int margin_X = 2;
 COORD position_test = { startX, startY };
 
 const int items_count = 26;
-string menu_items[items_count] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
-	"k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+const int items_count_ru = 33;
+
+string alphabet;
+
+//string menu_items[items_count] = { "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+//	"k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" };
+
+//string menu_ruitems[items_count] = { "à", "á", "â", "ã", "ä", "å", "¸", "æ", "ç", "è",
+//	"é", "ê", "ë", "ì", "í", "î", "ï", "ð", "ñ", "ò", "ó", "ô", "õ", "ö", "÷", "ø" };
 
 
 int current_item_Y = 0;

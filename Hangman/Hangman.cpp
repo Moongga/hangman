@@ -33,16 +33,20 @@ bool RightWord(int index = 0) {
 
 void ShowAlphabet() {
 
-	for (int i = 0; i < 26; i++)
-	{
+	for (int i = 0; i < alphabet.size(); i++) {
 		if (i == 13)
 		{
 			position_test.Y += margin_Y;
 			position_test.X = startX;
 		}
+		if (i == 26)
+		{
+			position_test.Y += margin_Y;
+			position_test.X = startX + 6;
+		}
 		SetConsoleTextAttribute(h, 7);
 		SetConsoleCursorPosition(h, position_test);
-		cout << menu_items[i];
+		cout << alphabet[i];
 		position_test.X += margin_X;
 	}
 
@@ -53,56 +57,141 @@ void ShowAlphabet() {
 	position_test.Y = startY + current_item_Y * margin_Y;
 	position_test.X = startX + current_item_X * margin_X;
 	SetConsoleCursorPosition(h, position);
-	cout << menu_items[word_index];
+	cout << alphabet[word_index];
 }
 
 void MoveAlphabet() {
-
+	enum Keys { ENTER = 13, ESCAPE = 27, SPACE = 32, LEFT = 75, RIGHT = 77, DOWN = 80, UP = 72 };
 	int code;
+
 	while (true)
 	{
 		string comparate = answer_word;
 		bool comparate_enter = true;
 
+		// в отдельную переменную записываем, сколько в том или ином алфавите букв для сравнения в code == ENTER
+		int alph_amount;
+		if (which_path)
+		{
+			alph_amount = 33;
+		}
+		else if (!which_path)
+		{
+			alph_amount = 26;
+		}
+
+		// Если выбран русский язык, то благодаря переменной сможем передвигаться по трём столбцам клавиатуры (32 буквам),
+		// если английский, то по двум столбцам (26 буквам)
+		int which_margin;
+		if (which_path)
+		{
+			
+			which_margin = margin_Y;
+		}
+		else
+		{
+			which_margin = 1;
+		}
+
+	
 		code = _getch();
 		if (code == 224) {
 			code = _getch();
 		}
 
-
 		SetConsoleTextAttribute(h, curent_color);
 		position_test.Y = startY + current_item_Y * margin_Y;
 		position_test.X = startX + current_item_X * margin_X;
 		SetConsoleCursorPosition(h, position_test);
-		cout << menu_items[word_index];
+		cout << alphabet[word_index];
 
-		if ((code == DOWN) && current_item_Y < margin_Y - 1) // down arrow
+		if ((code == DOWN))
 		{
-			current_item_Y++;
-			word_index += 13;
+			if (!which_path && current_item_Y < which_margin)
+			{
+				current_item_Y++;
+				word_index += 13;
+			}
+			if (which_path && (word_index > 15 && word_index < 23) && current_item_Y < which_margin)
+			{
+				current_item_Y++;
+				word_index += 10;
+			}
+			else if (which_path && word_index < 13 && current_item_Y < which_margin)
+			{
+				current_item_Y++;
+				word_index += 13;
+			}
 		}
-		else if ((code == UP) && current_item_Y > 0) // up arrow
+
+		else if ((code == UP))
 		{
-			current_item_Y--;
-			word_index -= 13;
+			if (!which_path && current_item_Y > 0)
+			{
+				current_item_Y--;
+				word_index -= 13;
+			}
+			if (which_path && (word_index > 25 && word_index < 33) && current_item_Y > 0)
+			{
+				current_item_Y--;
+				word_index -= 10;
+			}
+			else if (which_path && word_index < 26 && current_item_Y > 0)
+			{
+				current_item_Y--;
+				word_index -= 13;
+			}
 		}
-		if ((code == RIGHT) && current_item_X < 12) // right arrow
+
+		if ((code == RIGHT))
 		{
-			current_item_X++;
-			word_index++;
+			if (!which_path && current_item_X < 12)
+			{
+				current_item_X++;
+				word_index++;
+			}
+			
+			if (which_path && (word_index > 25 && word_index < 32) && current_item_X < 10)
+			{
+				current_item_X++;
+				word_index++;
+			}
+
+			else if (which_path && (word_index < 25) && (current_item_X < 12))
+			{
+				current_item_X++;
+				word_index++;
+			}
 		}
-		else if ((code == LEFT) && current_item_X > 0) // left arrow
+
+		else if (code == LEFT)
 		{
-			current_item_X--;
-			word_index--;
+			if (!which_path && current_item_X > 0)
+			{
+					current_item_X--;
+					word_index--;
+			}
+
+			if (which_path && word_index > 25 && current_item_X > 3)
+			{
+				current_item_X--;
+				word_index--;
+			}
+			
+			else if (which_path && word_index < 26 && current_item_X > 0)
+			{
+				current_item_X--;
+				word_index--;
+			}
 		}
+
 		else if (code == ENTER)
 		{
-			for (int i = 0; i < 26; i++)
+			for (int i = 0; i < alph_amount; i++)
 			{
 				if (i == word_index)
 				{
-					answer_word = menu_items[word_index];
+					answer_word = alphabet[word_index];
 					break;
 				}
 			}
@@ -132,8 +221,9 @@ void MoveAlphabet() {
 			position_test.Y = startY + current_item_Y * margin_Y;
 			position_test.X = startX + current_item_X * margin_X;
 			SetConsoleCursorPosition(h, position_test);
-			cout << menu_items[word_index];
+			cout << alphabet[word_index];
 		}
+
 		//else if (!comparate_enter)
 		//{
 		//	if (RightWord(word_index))
@@ -263,14 +353,16 @@ void main()
 
 	cin >> answer_language;
 
-	if (answer_language == 1)
+	if (answer_language == 1) // на русском
 	{
 		which_path = true;
+		alphabet = "абвгдеёжзийклмнопрстуфхцчшщъыьэюя";
 	}
 
-	else if (answer_language == 2)
+	else if (answer_language == 2) // на английском
 	{
 		which_path = false;
+		alphabet = "abcdefghijklmnopqrstuvwxyz";
 	}
 
 	game_word = GetWord();
@@ -290,8 +382,6 @@ void main()
 		SetCursor(40, 20);
 	}
 
-
-
 	SetCursor(40, words_Yposition);
 	for (int i = 0; i < words_amount - 1; i++)
 	{
@@ -303,21 +393,21 @@ void main()
 
 	int tries = 6;
 
-	//SetCursor(40, 8);
-	//cout << "Осталось попыток: " << tries;
+	ShowAlphabet();
+	MoveAlphabet();
 
-	if (which_path)
-	{
-		SetCursor(40, 4);
-		cout << "Введите букву: ";
-		cin >> answer_word;
-	}
-	else if (!which_path)
-	{
-		//SetCursor(40, 4);
-		ShowAlphabet();
-		MoveAlphabet();
-	}
+	//if (which_path)
+	//{
+	//	SetCursor(40, 4);
+	//	cout << "Введите букву: ";
+	//	cin >> answer_word;
+	//}
+	//else if (!which_path)
+	//{
+	//	//SetCursor(40, 4);
+	//	ShowAlphabet();
+	//	MoveAlphabet();
+	//}
 
 	while (words_left > 0) {
 		SetConsoleTextAttribute(h, 14);
@@ -374,9 +464,6 @@ void main()
 					SetCursor(hangman_Xposition + 2, hangman_Yposition + 3);
 					cout << "\\";
 				}
-
-				//SetCursor(40, 8);
-				//cout << "Осталось попыток: " << tries;
 			}
 
 			SetCursor(67, 4);
@@ -398,17 +485,20 @@ void main()
 				cout << "Поздравляем, Вы выиграли!\n";
 				break;
 			}
-			if (which_path)
-			{
-				SetCursor(40, 4);
-				cout << "Введите букву: ";
-				cin >> answer_word;
-			}
-			else if (!which_path)
-			{
-				SetCursor(40, 4);
-				MoveAlphabet();
-			}
+			SetCursor(40, 4);
+			MoveAlphabet();
+
+			//if (which_path)
+			//{
+			//	SetCursor(40, 4);
+			//	cout << "Введите букву: ";
+			//	cin >> answer_word;
+			//}
+			//else if (!which_path)
+			//{
+			//	SetCursor(40, 4);
+			//	MoveAlphabet();
+			//}
 			//MoveAlphabet();
 		}
 	}
