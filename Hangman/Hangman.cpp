@@ -21,9 +21,10 @@ void SetCursor(int x, int y) {
 	SetConsoleCursorPosition(h, position);
 }
 
+// проверяем букву на правильность/неправильность, чтобы потом окрасить в красный или зелёный
 bool RightWord(int index = 0) {
 	for (int i = 0; i < words_amount; i++) {
-		if (index == i)
+		if (alphabet[index] == game_word[i])
 		{
 			return true;
 		}
@@ -67,6 +68,7 @@ void MoveAlphabet() {
 	while (true)
 	{
 		string comparate = answer_word;
+		// переменная, отвечающая за нажатие пользователем на Enter
 		bool comparate_enter = true;
 
 		// в отдельную переменную записываем, сколько в том или ином алфавите букв для сравнения в code == ENTER
@@ -85,7 +87,7 @@ void MoveAlphabet() {
 		int which_margin;
 		if (which_path)
 		{
-			
+
 			which_margin = margin_Y;
 		}
 		else
@@ -93,7 +95,6 @@ void MoveAlphabet() {
 			which_margin = 1;
 		}
 
-	
 		code = _getch();
 		if (code == 224) {
 			code = _getch();
@@ -150,7 +151,7 @@ void MoveAlphabet() {
 				current_item_X++;
 				word_index++;
 			}
-			
+
 			if (which_path && (word_index > 25 && word_index < 32) && current_item_X < 10)
 			{
 				current_item_X++;
@@ -168,8 +169,8 @@ void MoveAlphabet() {
 		{
 			if (!which_path && current_item_X > 0)
 			{
-					current_item_X--;
-					word_index--;
+				current_item_X--;
+				word_index--;
 			}
 
 			if (which_path && word_index > 25 && current_item_X > 3)
@@ -177,7 +178,7 @@ void MoveAlphabet() {
 				current_item_X--;
 				word_index--;
 			}
-			
+
 			else if (which_path && word_index < 26 && current_item_X > 0)
 			{
 				current_item_X--;
@@ -198,32 +199,37 @@ void MoveAlphabet() {
 
 			comparate_enter = false;
 
-			//if (RightWord(word_index))
-			//{
-			//	
-			//	position_test.X--;
-			//	SetConsoleCursorPosition(h, position_test);
-			//	SetConsoleTextAttribute(h, 10);
-			//	cout << menu_items[word_index];
-			//}
-			//else if (!RightWord(word_index)) {
-			//	
-			//	position_test.X--;
-			//	SetConsoleCursorPosition(h, position_test);
-			//	SetConsoleTextAttribute(h, 12);
-			//	cout << menu_items[word_index];
-			//}
+			//////
+			if (RightWord(word_index))
+			{
+				
+				//position_test.X--;
+				curent_color = 10;
+				SetConsoleCursorPosition(h, position_test);
+				SetConsoleTextAttribute(h, 10);
+				cout << alphabet[word_index];
+			}
+			else if (!RightWord(word_index)) {
+				
+				//position_test.X--;
+				curent_color = 12;
+				SetConsoleCursorPosition(h, position_test);
+				SetConsoleTextAttribute(h, 12);
+				cout << alphabet[word_index];
+			}
+			///////
 		}
 
-		if (comparate_enter)
-		{
-			SetConsoleTextAttribute(h, 14);
-			position_test.Y = startY + current_item_Y * margin_Y;
-			position_test.X = startX + current_item_X * margin_X;
-			SetConsoleCursorPosition(h, position_test);
-			cout << alphabet[word_index];
-		}
+		//if (comparate_enter)
+		//{
+		//	SetConsoleTextAttribute(h, 14);
+		//	position_test.Y = startY + current_item_Y * margin_Y;
+		//	position_test.X = startX + current_item_X * margin_X;
+		//	SetConsoleCursorPosition(h, position_test);
+		//	cout << alphabet[word_index];
+		//}
 
+		//////
 		//else if (!comparate_enter)
 		//{
 		//	if (RightWord(word_index))
@@ -232,7 +238,7 @@ void MoveAlphabet() {
 		//		position_test.Y = startY + current_item_Y * margin_Y;
 		//		position_test.X = startX + current_item_X * margin_X;
 		//		SetConsoleCursorPosition(h, position_test);
-		//		cout << menu_items[word_index];
+		//		cout << alphabet[word_index];
 		//	}
 		//	else if (!RightWord(word_index))
 		//	{
@@ -240,19 +246,25 @@ void MoveAlphabet() {
 		//		position_test.Y = startY + current_item_Y * margin_Y;
 		//		position_test.X = startX + current_item_X * margin_X;
 		//		SetConsoleCursorPosition(h, position_test);
-		//		cout << menu_items[word_index];
+		//		cout << alphabet[word_index];
 		//	}
-		//	//SetConsoleTextAttribute(h, 14);
-		//	//position_test.Y = startY + current_item_Y * margin_Y;
-		//	//position_test.X = startX + current_item_X * margin_X;
-		//	//SetConsoleCursorPosition(h, position_test);
-		//	//cout << menu_items[word_index];
+		//	SetConsoleTextAttribute(h, 14);
+		//	position_test.Y = startY + current_item_Y * margin_Y;
+		//	position_test.X = startX + current_item_X * margin_X;
+		//	SetConsoleCursorPosition(h, position_test);
+		//	cout << alphabet[word_index];
 		//}
-		//SetConsoleTextAttribute(h, 14);
-		//position_test.Y = startY + current_item_Y * margin_Y;
-		//position_test.X = startX + current_item_X * margin_X;
-		//SetConsoleCursorPosition(h, position_test);
-		//cout << menu_items[word_index];
+		if (comparate_enter)
+		{
+			curent_color = 7;
+			SetConsoleTextAttribute(h, 14);
+			position_test.Y = startY + current_item_Y * margin_Y;
+			position_test.X = startX + current_item_X * margin_X;
+			SetConsoleCursorPosition(h, position_test);
+			cout << alphabet[word_index];
+		}
+
+		/////
 
 		if (comparate != answer_word)
 		{
@@ -319,7 +331,7 @@ void main()
 
 	srand(time(0));
 	rand();
-	
+
 	setlocale(LC_ALL, "С");
 	//setlocale(0, "RUS");
 
