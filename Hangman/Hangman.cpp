@@ -4,7 +4,6 @@
 #include <string>
 #include <ctime>
 #include <cstring>
-#include "Menu.h"
 #include "WordsFiles.h"
 #include "GlobalVariables.h"
 using namespace std;
@@ -14,6 +13,17 @@ int words_amount;
 int words_left;
 //////
 
+// проверка буквы в чёрном списке
+bool CheckBlacklist(int alph_amount, bool move_block, int steps) {
+	for (int i = 0; i < alph_amount; i++)
+	{
+		if (blacklist[i] == alphabet[word_index + steps])
+		{
+			return false;
+			break;
+		}
+	}
+}
 
 void SetCursor(int x, int y) {
 	position.X = x;
@@ -106,13 +116,30 @@ void MoveAlphabet() {
 		SetConsoleCursorPosition(h, position_test);
 		cout << alphabet[word_index];
 
+		// переменная для выявления, можно ли передвигаться на следующую клетку, или нет (в случае если она красная/зелёная)
+		bool move_block = true;
+
 		if ((code == DOWN))
 		{
 			if (!which_path && current_item_Y < which_margin)
 			{
-				current_item_Y++;
-				word_index += 13;
+				// проверка буквы на чёрный список
+				move_block = CheckBlacklist(alph_amount, move_block, 13);
+				//for (int i = 0; i < alph_amount; i++)
+				//{
+				//	if (blacklist[i] == alphabet[word_index + 13])
+				//	{
+				//		move_block = false;
+				//		break;
+				//	}
+				//}
+				if (move_block)
+				{
+					current_item_Y++;
+					word_index += 13;
+				}
 			}
+
 			if (which_path && (word_index > 15 && word_index < 23) && current_item_Y < which_margin)
 			{
 				current_item_Y++;
@@ -129,9 +156,21 @@ void MoveAlphabet() {
 		{
 			if (!which_path && current_item_Y > 0)
 			{
-				current_item_Y--;
-				word_index -= 13;
+				move_block = CheckBlacklist(alph_amount, move_block, -13);
+				//for (int i = 0; i < alph_amount; i++)
+				//{
+				//	if (blacklist[i] == alphabet[word_index - 13])
+				//	{
+				//		move_block = false;
+				//		break;
+				//	}
+				//}
+				if (move_block) {
+					current_item_Y--;
+					word_index -= 13;
+				}
 			}
+
 			if (which_path && (word_index > 25 && word_index < 33) && current_item_Y > 0)
 			{
 				current_item_Y--;
@@ -188,6 +227,7 @@ void MoveAlphabet() {
 
 		else if (code == ENTER)
 		{
+			// записываем букву пользователя в переменную
 			for (int i = 0; i < alph_amount; i++)
 			{
 				if (i == word_index)
@@ -197,21 +237,29 @@ void MoveAlphabet() {
 				}
 			}
 
+			// записываем букву пользователя в чёрный список
+			for (int i = 0; i < alph_amount; i++)
+			{
+				if (blacklist[i] == 0)
+				{
+					blacklist[i] = alphabet[word_index];
+					break;
+				}
+			}
+
 			comparate_enter = false;
 
 			//////
 			if (RightWord(word_index))
 			{
-				
-				//position_test.X--;
+
 				curent_color = 10;
 				SetConsoleCursorPosition(h, position_test);
 				SetConsoleTextAttribute(h, 10);
 				cout << alphabet[word_index];
 			}
 			else if (!RightWord(word_index)) {
-				
-				//position_test.X--;
+
 				curent_color = 12;
 				SetConsoleCursorPosition(h, position_test);
 				SetConsoleTextAttribute(h, 12);
@@ -220,40 +268,6 @@ void MoveAlphabet() {
 			///////
 		}
 
-		//if (comparate_enter)
-		//{
-		//	SetConsoleTextAttribute(h, 14);
-		//	position_test.Y = startY + current_item_Y * margin_Y;
-		//	position_test.X = startX + current_item_X * margin_X;
-		//	SetConsoleCursorPosition(h, position_test);
-		//	cout << alphabet[word_index];
-		//}
-
-		//////
-		//else if (!comparate_enter)
-		//{
-		//	if (RightWord(word_index))
-		//	{
-		//		SetConsoleTextAttribute(h, 10);
-		//		position_test.Y = startY + current_item_Y * margin_Y;
-		//		position_test.X = startX + current_item_X * margin_X;
-		//		SetConsoleCursorPosition(h, position_test);
-		//		cout << alphabet[word_index];
-		//	}
-		//	else if (!RightWord(word_index))
-		//	{
-		//		SetConsoleTextAttribute(h, 12);
-		//		position_test.Y = startY + current_item_Y * margin_Y;
-		//		position_test.X = startX + current_item_X * margin_X;
-		//		SetConsoleCursorPosition(h, position_test);
-		//		cout << alphabet[word_index];
-		//	}
-		//	SetConsoleTextAttribute(h, 14);
-		//	position_test.Y = startY + current_item_Y * margin_Y;
-		//	position_test.X = startX + current_item_X * margin_X;
-		//	SetConsoleCursorPosition(h, position_test);
-		//	cout << alphabet[word_index];
-		//}
 		if (comparate_enter)
 		{
 			curent_color = 7;
@@ -273,49 +287,24 @@ void MoveAlphabet() {
 	}
 }
 
-void Basic_Settings() {
-	// Выставление шрифта по умолчанию
-	CONSOLE_FONT_INFOEX CFI;
-	CFI.cbSize = sizeof CFI;
-	CFI.nFont = 0;
-	CFI.dwFontSize.X = 12; // ширина шрифта
-	CFI.dwFontSize.Y = 14;  // высота шрифта
-	CFI.FontFamily = FF_DONTCARE;
-	CFI.FontWeight = FW_NORMAL;
-	wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
-	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
-}
-
-void Special_Settings() {
-	// Выставление шрифта по умолчанию
-	CONSOLE_FONT_INFOEX CFI;
-	CFI.cbSize = sizeof CFI;
-	CFI.nFont = 0;
-	CFI.dwFontSize.X = 12; // ширина шрифта
-	CFI.dwFontSize.Y = 14;  // высота шрифта
-	CFI.FontFamily = FF_DONTCARE;
-	CFI.FontWeight = FW_NORMAL;
-	wcscpy_s(CFI.FaceName, L"Terminal"); //задаём шрифт по умолчанию (точечный)
-	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
-}
-
 void main()
 {
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
 
-	Basic_Settings();
-	//// Выставление шрифта по умолчанию
-	//CONSOLE_FONT_INFOEX CFI;
-	//CFI.cbSize = sizeof CFI;
-	//CFI.nFont = 0;
-	//CFI.dwFontSize.X = 12; // ширина шрифта
-	//CFI.dwFontSize.Y = 14;  // высота шрифта
-	//CFI.FontFamily = FF_DONTCARE;
-	//CFI.FontWeight = FW_NORMAL;
+	//SetConsoleCP(1251);
+	//SetConsoleOutputCP(1251);
 
-	//wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
-	//SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
+	//Basic_Settings();
+	// Выставление шрифта по умолчанию
+	CONSOLE_FONT_INFOEX CFI;
+	CFI.cbSize = sizeof CFI;
+	CFI.nFont = 0;
+	CFI.dwFontSize.X = 12; // ширина шрифта
+	CFI.dwFontSize.Y = 14;  // высота шрифта
+	CFI.FontFamily = FF_DONTCARE;
+	CFI.FontWeight = FW_NORMAL;
+
+	wcscpy_s(CFI.FaceName, L"Lucida Console"); //задаём шрифт по умолчанию (Lucida Console)
+	SetCurrentConsoleFontEx(GetStdHandle(STD_OUTPUT_HANDLE), FALSE, &CFI);
 
 	CONSOLE_CURSOR_INFO cursor;
 	cursor.bVisible = false;
@@ -335,27 +324,34 @@ void main()
 	setlocale(LC_ALL, "С");
 	//setlocale(0, "RUS");
 
+	for (int i = 0; i < items_count; i++)
+	{
+		blacklist[i] = 0;
+	}
+
 	int hangman_Xposition = 20;
 	int hangman_Yposition = 14;
 	int words_Yposition = startY - 6;
 
 	SetConsoleTextAttribute(h, 7);
 	SetCursor(hangman_Xposition - 2, hangman_Yposition);
-	cout << " " << "-" << "-" << "-";
+	cout << (char)218 << (char)196 << (char)196 << (char)196;
 	SetCursor(hangman_Xposition - 2, hangman_Yposition + 1);
 	for (int i = 0; i < 4; i++)
 	{
-		cout << "|";
+		cout << (char)179;
 		position.Y++;
 		SetConsoleCursorPosition(h, position);
 	}
 
 	SetCursor(hangman_Xposition - 2, hangman_Yposition + 5);
 
-	cout << "----";
+	//setlocale(0, "C");
+
+	cout << char(193) << (char)196;
+	//setlocale(0, "UKR");
 
 	setlocale(0, "RUS");
-	//Basic_Settings();
 
 	SetCursor(40, 19);
 	cout << "На каком языке Вы хотите отгадывать?";
@@ -407,19 +403,6 @@ void main()
 
 	ShowAlphabet();
 	MoveAlphabet();
-
-	//if (which_path)
-	//{
-	//	SetCursor(40, 4);
-	//	cout << "Введите букву: ";
-	//	cin >> answer_word;
-	//}
-	//else if (!which_path)
-	//{
-	//	//SetCursor(40, 4);
-	//	ShowAlphabet();
-	//	MoveAlphabet();
-	//}
 
 	while (words_left > 0) {
 		SetConsoleTextAttribute(h, 14);
@@ -499,19 +482,7 @@ void main()
 			}
 			SetCursor(40, 4);
 			MoveAlphabet();
-
-			//if (which_path)
-			//{
-			//	SetCursor(40, 4);
-			//	cout << "Введите букву: ";
-			//	cin >> answer_word;
-			//}
-			//else if (!which_path)
-			//{
-			//	SetCursor(40, 4);
-			//	MoveAlphabet();
-			//}
-			//MoveAlphabet();
 		}
 	}
+	delete[] blacklist;
 }

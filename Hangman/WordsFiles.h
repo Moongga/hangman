@@ -26,7 +26,7 @@ string GetWord()
 	else
 	{
 		strcpy(path, "Words_Eng.txt");
-		n = 364;
+		n = 40;
 	}
 
 	FILE* f;

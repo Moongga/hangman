@@ -156,8 +156,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GlobalVariables.h" />
-    <ClInclude Include="Menu.h" />
-    <ClInclude Include="Temp.h" />
     <ClInclude Include="WordsFiles.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
